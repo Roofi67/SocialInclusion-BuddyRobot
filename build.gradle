@@ -1,0 +1,50 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+        maven { url "https://jitpack.io" }
+        // to read credential local file
+        def gradlecredentials = "credentials.gradle"
+        if (project.file(gradlecredentials).exists()){
+            apply from: gradlecredentials
+        }
+    }
+}
+
+
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+        maven { url "https://jitpack.io" }
+        // BFR SDK url
+        maven { url "https://bluefrogrobotics.jfrog.io/artifactory/bluefrogrobotics-libs-release-local/"
+            credentials{
+                username "${maven_user}"
+                password "${maven_password}"
+            }
+        }
+        maven{url "https://pkgs.dev.azure.com/AzureSDKs/Public/_packaging/azuresdk/maven/v1"}
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+// Load local properties
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { stream ->
+        localProperties.load(stream)
+    }
+}
+
+ext {
+    cognitiveServiceKey = localProperties.getProperty('COGNITIVE_SERVICE_KEY')
+    openaiApiKey = localProperties.getProperty('OPENAI_API_KEY')
+}
